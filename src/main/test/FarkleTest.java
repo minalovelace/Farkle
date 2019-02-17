@@ -916,6 +916,32 @@ class FarkleTest {
 		Assertions.assertEquals(800, result);
 	}
 
+	@Test
+	void testStraight() {
+		// arrange
+		int[] input = new int[] { 1, 2, 3, 4, 5, 6 };
+		Farkle farkle = new Farkle();
+
+		// act
+		int result = farkle.score(input);
+
+		// assert
+		Assertions.assertEquals(1200, result);
+	}
+
+	@Test
+	void testUnsortedStraight() {
+		// arrange
+		int[] input = new int[] { 1, 3, 5, 6, 2, 4 };
+		Farkle farkle = new Farkle();
+
+		// act
+		int result = farkle.score(input);
+
+		// assert
+		Assertions.assertEquals(1200, result);
+	}
+
 	// ---- Illegal number of dices ----
 
 	@Test

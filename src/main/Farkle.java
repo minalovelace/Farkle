@@ -102,13 +102,23 @@ public class Farkle {
 			return calculateScoreOfSixDicesContainingTriple(sortedDices);
 		}
 
-		if (sortedDices.containsValue(2) && sortedDices.size() == 3) {
+		if (isThreePairs(sortedDices)) {
 			return 800;
 		}
 
-		// TODO check for straight
-
+		if (isStraight(sortedDices)) {
+			return 1200;			
+		}
+		
 		return 0;
+	}
+
+	private boolean isStraight(Map<Integer, Integer> sortedDices) {
+		return sortedDices.size() == 6;
+	}
+
+	private boolean isThreePairs(Map<Integer, Integer> sortedDices) {
+		return sortedDices.containsValue(2) && sortedDices.size() == 3;
 	}
 
 	private int calculateScoreOfSixDicesContainingTriple(Map<Integer, Integer> sortedDices) {
