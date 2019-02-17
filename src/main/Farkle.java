@@ -12,12 +12,30 @@ public class Farkle {
 		case 3:
 			return calculateThreeDices(input);
 		case 4:
-			int[] sortedInput = input;
-			Arrays.sort(sortedInput, 0, sortedInput.length);
-			return calculateFourDices(sortedInput);
+			return calculateFourDices(input);
+		case 5:
+			return calculateFiveDices(input);
 		default:
 			throw new IllegalArgumentException("Illegal number of dices: '" + input.length + "'.");
 		}
+	}
+
+	private int calculateFiveDices(int[] input) {
+		if (isFiveOfAKind(input))
+			return calculateValueOfTriple(input[0]) * 4;
+
+		return 0;
+	}
+
+	private boolean isFiveOfAKind(int[] input) {
+		int[] firstFourDices = Arrays.copyOf(input, 4);
+		return isFourOfAKind(firstFourDices) && input[0] == input[4];
+	}
+
+	private int[] sortDices(int[] input) {
+		int[] sortedInput = input;
+		Arrays.sort(sortedInput, 0, sortedInput.length);
+		return sortedInput;
 	}
 
 	private int accumulateSingleDices(int[] input) {
@@ -30,17 +48,17 @@ public class Farkle {
 	}
 
 	private int calculateFourDices(int[] input) {
-		int[] firstThreeDices = new int[] { input[0], input[1], input[2] };
-		int[] lastThreeDices = new int[] { input[1], input[2], input[3] };
-		if (isFourOfAKind(input)) {
-			return calculateFourOfAKind(input[0]);
-		} else if (isTriple(firstThreeDices)) {
-			return calculateValueOfTriple(input[2]) + calculateSingleDice(input[3]);
-		} else if (isTriple(lastThreeDices)) {
-			return calculateValueOfTriple(input[2]) + calculateSingleDice(input[0]);
-		}
+		int[] sortedInput = sortDices(input);
+		int[] firstThreeDices = Arrays.copyOf(input, 3);
+		int[] lastThreeDices = Arrays.copyOfRange(input, 1, 4);
+		if (isFourOfAKind(sortedInput))
+			return calculateFourOfAKind(sortedInput[0]);
+		else if (isTriple(firstThreeDices))
+			return calculateValueOfTriple(sortedInput[2]) + calculateSingleDice(sortedInput[3]);
+		else if (isTriple(lastThreeDices))
+			return calculateValueOfTriple(sortedInput[2]) + calculateSingleDice(sortedInput[0]);
 
-		return accumulateSingleDices(input);
+		return accumulateSingleDices(sortedInput);
 	}
 
 	private int calculateFourOfAKind(int input) {
@@ -86,7 +104,7 @@ public class Farkle {
 	}
 
 	private boolean isFourOfAKind(int[] input) {
-		int[] firstThreeDices = new int[] { input[0], input[1], input[2] };
+		int[] firstThreeDices = Arrays.copyOf(input, 3);
 		return isTriple(firstThreeDices) && input[0] == input[3];
 	}
 
