@@ -1,87 +1,136 @@
 package main;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class Farkle {
 	public int score(int[] input) {
-		switch (input.length) {
-		case 0:
-		case 1:
-		case 2:
-			return accumulateSingleDices(input);
-		case 3:
-			return calculateThreeDices(input);
-		case 4:
-			return calculateFourDices(input);
-		case 5:
-			return calculateFiveDices(input);
-		default:
+		if (input.length > 6) {
 			throw new IllegalArgumentException("Illegal number of dices: '" + input.length + "'.");
+		}
+
+		// The key is the eyes of the dice
+		// The value is the number of the corresponding dice
+		Map<Integer, Integer> sortedAndCountedDices = sortAndCountDices(input);
+		return calculateScore(sortedAndCountedDices, input.length);
+	}
+
+	private int calculateScore(Map<Integer, Integer> sortedDices, int numberOfDices) {
+		switch (numberOfDices) {
+		case 3:
+			return calculateThreeDices(sortedDices);
+		case 4:
+			return calculateFourDices(sortedDices);
+		case 5:
+			return calculateFiveDices(sortedDices);
+		case 6:
+			return accumulateSingleDices(sortedDices);
+		default:
+			return accumulateSingleDices(sortedDices);
 		}
 	}
 
-	private int calculateFiveDices(int[] input) {
-		if (isFiveOfAKind(input))
-			return calculateValueOfTriple(input[0]) * 4;
+	private int calculateFiveDices(Map<Integer, Integer> sortedDices) {
+		if (sortedDices.containsValue(5)) {
+			Integer eyes = getEyesOfFirstDice(sortedDices);
+			return calculateValueOfTriple(eyes) * 4;
+		}
+
+		if (sortedDices.containsValue(4)) {
+			Integer eyes = getEyesOfFourDices(sortedDices);
+			Map<Integer, Integer> remainingDices = getRemainingEyes(sortedDices);
+			return calculateValueOfTriple(eyes) * 2 + accumulateSingleDices(remainingDices);
+		}
+
+		if (sortedDices.containsValue(3)) {
+			Integer eyes = getEyesOfTriple(sortedDices);
+			Map<Integer, Integer> remainingDices = getRemainingEyes(sortedDices);
+			return calculateValueOfTriple(eyes) + accumulateSingleDices(remainingDices);
+		}
+
+		return accumulateSingleDices(sortedDices);
+	}
+
+	private Integer getEyesOfFourDices(Map<Integer, Integer> sortedDices) {
+		for (Entry<Integer, Integer> entry : sortedDices.entrySet()) {
+			if (entry.getValue() == 4) {
+				return entry.getKey();
+			}
+		}
 
 		return 0;
 	}
 
-	private boolean isFiveOfAKind(int[] input) {
-		int[] firstFourDices = Arrays.copyOf(input, 4);
-		return isFourOfAKind(firstFourDices) && input[0] == input[4];
+	private int calculateFourDices(Map<Integer, Integer> sortedDices) {
+		if (sortedDices.containsValue(4)) {
+			Integer eyes = getEyesOfFirstDice(sortedDices);
+			return calculateValueOfTriple(eyes) * 2;
+		}
+
+		if (sortedDices.containsValue(3)) {
+			Integer eyes = getEyesOfTriple(sortedDices);
+			Map<Integer, Integer> remainingDices = getRemainingEyes(sortedDices);
+			return calculateValueOfTriple(eyes) + accumulateSingleDices(remainingDices);
+		}
+
+		return accumulateSingleDices(sortedDices);
 	}
 
-	private int[] sortDices(int[] input) {
-		int[] sortedInput = input;
-		Arrays.sort(sortedInput, 0, sortedInput.length);
-		return sortedInput;
-	}
-
-	private int accumulateSingleDices(int[] input) {
-		int result = 0;
-		for (int i : input) {
-			result += calculateSingleDice(i);
+	private Map<Integer, Integer> getRemainingEyes(Map<Integer, Integer> sortedDices) {
+		Map<Integer, Integer> result = new HashMap<Integer, Integer>();
+		for (Entry<Integer, Integer> entry : sortedDices.entrySet()) {
+			if (entry.getValue() < 3) {
+				result.put(entry.getKey(), entry.getValue());
+			}
 		}
 
 		return result;
 	}
 
-	private int calculateFourDices(int[] input) {
-		int[] sortedInput = sortDices(input);
-		int[] firstThreeDices = Arrays.copyOf(input, 3);
-		int[] lastThreeDices = Arrays.copyOfRange(input, 1, 4);
-		if (isFourOfAKind(sortedInput))
-			return calculateFourOfAKind(sortedInput[0]);
-		else if (isTriple(firstThreeDices))
-			return calculateValueOfTriple(sortedInput[2]) + calculateSingleDice(sortedInput[3]);
-		else if (isTriple(lastThreeDices))
-			return calculateValueOfTriple(sortedInput[2]) + calculateSingleDice(sortedInput[0]);
-
-		return accumulateSingleDices(sortedInput);
-	}
-
-	private int calculateFourOfAKind(int input) {
-		return calculateValueOfTriple(input) * 2;
-	}
-
-	private int calculateSingleDice(int input) {
-		switch (input) {
-		case 1:
-			return 100;
-		case 5:
-			return 50;
-		default:
-			return 0;
-		}
-	}
-
-	private int calculateThreeDices(int[] input) {
-		if (isTriple(input)) {
-			return calculateValueOfTriple(input[0]);
+	private Integer getEyesOfTriple(Map<Integer, Integer> sortedDices) {
+		for (Entry<Integer, Integer> entry : sortedDices.entrySet()) {
+			if (entry.getValue() == 3) {
+				return entry.getKey();
+			}
 		}
 
-		return accumulateSingleDices(input);
+		return 0;
+	}
+
+	private Integer getEyesOfFirstDice(Map<Integer, Integer> sortedDices) {
+		return sortedDices.keySet().toArray(new Integer[0])[0];
+	}
+
+	private int calculateThreeDices(Map<Integer, Integer> sortedDices) {
+		if (sortedDices.containsValue(3)) {
+			Integer[] dices = sortedDices.keySet().toArray(new Integer[0]);
+			return calculateValueOfTriple(dices[0]);
+		}
+
+		return accumulateSingleDices(sortedDices);
+	}
+
+	private int accumulateSingleDices(Map<Integer, Integer> sortedDices) {
+		Integer numberOfOnes = sortedDices.getOrDefault(1, 0);
+		Integer numberOfFives = sortedDices.getOrDefault(5, 0);
+
+		return numberOfOnes * 100 + numberOfFives * 50;
+	}
+
+	private Map<Integer, Integer> sortAndCountDices(int[] input) {
+		Map<Integer, Integer> result = Arrays.stream(input).boxed()
+				.collect(Collectors.groupingBy(Function.identity(), countNumberOfDices()));
+
+		return result;
+	}
+
+	private Collector<Integer, ?, Integer> countNumberOfDices() {
+		return Collectors.reducing(Integer.valueOf(0), (in, val) -> in + Integer.valueOf(1));
 	}
 
 	private int calculateValueOfTriple(int input) {
@@ -101,14 +150,5 @@ public class Farkle {
 		default:
 			return 0;
 		}
-	}
-
-	private boolean isFourOfAKind(int[] input) {
-		int[] firstThreeDices = Arrays.copyOf(input, 3);
-		return isTriple(firstThreeDices) && input[0] == input[3];
-	}
-
-	private boolean isTriple(int[] input) {
-		return input[0] == input[1] && input[1] == input[2];
 	}
 }
