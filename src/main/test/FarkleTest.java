@@ -469,4 +469,43 @@ class FarkleTest {
 		// assert
 		Assertions.assertEquals(1050, result);
 	}
+
+	@Test
+	void testTripleThreeAndFive() {
+		// arrange
+		int[] input = new int[] { 3, 5, 3, 3 };
+		Farkle farkle = new Farkle();
+
+		// act
+		int result = farkle.score(input);
+
+		// assert
+		Assertions.assertEquals(350, result);
+	}
+
+	@Test
+	void testTripleThreeAndOne() {
+		// arrange
+		int[] input = new int[] { 3, 3, 1, 3 };
+		Farkle farkle = new Farkle();
+
+		// act
+		int result = farkle.score(input);
+
+		// assert
+		Assertions.assertEquals(400, result);
+	}
+
+	@Test
+	void testFourDicesThreeAndOneAndFourAndFive() {
+		// arrange
+		int[] input = new int[] { 3, 1, 4, 5 };
+		Farkle farkle = new Farkle();
+
+		// act
+		int result = farkle.score(input);
+
+		// assert
+		Assertions.assertEquals(150, result);
+	}
 }

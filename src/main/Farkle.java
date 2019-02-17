@@ -29,7 +29,7 @@ public class Farkle {
 			return calculateValueOfTriple(input[2]) + calculateSingleDice(input[0]);
 		}
 
-		return 0;
+		return accumulateSingleDices(input);
 	}
 
 	private boolean isFourOfAKind(int[] input) {
