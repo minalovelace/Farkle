@@ -10,14 +10,14 @@ import java.util.stream.Collectors;
 
 public class Farkle {
 	public int score(int[] input) {
-		if (input.length > 6) {
-			throw new IllegalArgumentException("Illegal number of dices: '" + input.length + "'.");
-		}
+		int numberOfDices = input.length;
+		if (numberOfDices > 6)
+			throw new IllegalArgumentException("Illegal number of dices: '" + numberOfDices + "'.");
 
 		// The key is the eyes of the dice
 		// The value is the number of the corresponding dice
 		Map<Integer, Integer> sortedAndCountedDices = sortAndCountDices(input);
-		return calculateScore(sortedAndCountedDices, input.length);
+		return calculateScore(sortedAndCountedDices, numberOfDices);
 	}
 
 	private int calculateScore(Map<Integer, Integer> sortedDices, int numberOfDices) {
@@ -35,13 +35,28 @@ public class Farkle {
 		}
 	}
 
-	private int calculateSixDices(Map<Integer, Integer> sortedDices) {
-		if (sortedDices.containsValue(6)) {
-			Integer eyes = getEyesOfFirstDice(sortedDices);
-			return calculateValueOfTriple(eyes) * 8;
+	private int calculateThreeDices(Map<Integer, Integer> sortedDices) {
+		if (sortedDices.containsValue(3)) {
+			Integer[] dices = sortedDices.keySet().toArray(new Integer[0]);
+			return calculateValueOfTriple(dices[0]);
 		}
 
-		return 0;
+		return accumulateSingleDices(sortedDices);
+	}
+
+	private int calculateFourDices(Map<Integer, Integer> sortedDices) {
+		if (sortedDices.containsValue(4)) {
+			Integer eyes = getEyesOfFirstDice(sortedDices);
+			return calculateValueOfTriple(eyes) * 2;
+		}
+
+		if (sortedDices.containsValue(3)) {
+			Integer eyes = getEyesOfThreeDices(sortedDices);
+			Map<Integer, Integer> remainingDices = getRemainingEyes(sortedDices);
+			return calculateValueOfTriple(eyes) + accumulateSingleDices(remainingDices);
+		}
+
+		return accumulateSingleDices(sortedDices);
 	}
 
 	private int calculateFiveDices(Map<Integer, Integer> sortedDices) {
@@ -57,7 +72,7 @@ public class Farkle {
 		}
 
 		if (sortedDices.containsValue(3)) {
-			Integer eyes = getEyesOfTriple(sortedDices);
+			Integer eyes = getEyesOfThreeDices(sortedDices);
 			Map<Integer, Integer> remainingDices = getRemainingEyes(sortedDices);
 			return calculateValueOfTriple(eyes) + accumulateSingleDices(remainingDices);
 		}
@@ -65,81 +80,19 @@ public class Farkle {
 		return accumulateSingleDices(sortedDices);
 	}
 
-	private Integer getEyesOfFourDices(Map<Integer, Integer> sortedDices) {
-		for (Entry<Integer, Integer> entry : sortedDices.entrySet()) {
-			if (entry.getValue() == 4) {
-				return entry.getKey();
-			}
-		}
-
-		return 0;
-	}
-
-	private int calculateFourDices(Map<Integer, Integer> sortedDices) {
-		if (sortedDices.containsValue(4)) {
+	private int calculateSixDices(Map<Integer, Integer> sortedDices) {
+		if (sortedDices.containsValue(6)) {
 			Integer eyes = getEyesOfFirstDice(sortedDices);
-			return calculateValueOfTriple(eyes) * 2;
+			return calculateValueOfTriple(eyes) * 8;
 		}
 
-		if (sortedDices.containsValue(3)) {
-			Integer eyes = getEyesOfTriple(sortedDices);
+		if (sortedDices.containsValue(5)) {
+			Integer eyes = getEyesOfFiveDices(sortedDices);
 			Map<Integer, Integer> remainingDices = getRemainingEyes(sortedDices);
-			return calculateValueOfTriple(eyes) + accumulateSingleDices(remainingDices);
-		}
-
-		return accumulateSingleDices(sortedDices);
-	}
-
-	private Map<Integer, Integer> getRemainingEyes(Map<Integer, Integer> sortedDices) {
-		Map<Integer, Integer> result = new HashMap<Integer, Integer>();
-		for (Entry<Integer, Integer> entry : sortedDices.entrySet()) {
-			if (entry.getValue() < 3) {
-				result.put(entry.getKey(), entry.getValue());
-			}
-		}
-
-		return result;
-	}
-
-	private Integer getEyesOfTriple(Map<Integer, Integer> sortedDices) {
-		for (Entry<Integer, Integer> entry : sortedDices.entrySet()) {
-			if (entry.getValue() == 3) {
-				return entry.getKey();
-			}
+			return calculateValueOfTriple(eyes) * 4 + accumulateSingleDices(remainingDices);
 		}
 
 		return 0;
-	}
-
-	private Integer getEyesOfFirstDice(Map<Integer, Integer> sortedDices) {
-		return sortedDices.keySet().toArray(new Integer[0])[0];
-	}
-
-	private int calculateThreeDices(Map<Integer, Integer> sortedDices) {
-		if (sortedDices.containsValue(3)) {
-			Integer[] dices = sortedDices.keySet().toArray(new Integer[0]);
-			return calculateValueOfTriple(dices[0]);
-		}
-
-		return accumulateSingleDices(sortedDices);
-	}
-
-	private int accumulateSingleDices(Map<Integer, Integer> sortedDices) {
-		Integer numberOfOnes = sortedDices.getOrDefault(1, 0);
-		Integer numberOfFives = sortedDices.getOrDefault(5, 0);
-
-		return numberOfOnes * 100 + numberOfFives * 50;
-	}
-
-	private Map<Integer, Integer> sortAndCountDices(int[] input) {
-		Map<Integer, Integer> result = Arrays.stream(input).boxed()
-				.collect(Collectors.groupingBy(Function.identity(), countNumberOfDices()));
-
-		return result;
-	}
-
-	private Collector<Integer, ?, Integer> countNumberOfDices() {
-		return Collectors.reducing(Integer.valueOf(0), (in, val) -> in + Integer.valueOf(1));
 	}
 
 	private int calculateValueOfTriple(int input) {
@@ -159,5 +112,60 @@ public class Farkle {
 		default:
 			return 0;
 		}
+	}
+
+	private Map<Integer, Integer> getRemainingEyes(Map<Integer, Integer> sortedDices) {
+		Map<Integer, Integer> result = new HashMap<Integer, Integer>();
+		for (Entry<Integer, Integer> entry : sortedDices.entrySet()) {
+			if (entry.getValue() < 3) {
+				result.put(entry.getKey(), entry.getValue());
+			}
+		}
+
+		return result;
+	}
+
+	private Integer getEyesOfThreeDices(Map<Integer, Integer> sortedDices) {
+		return getEyesOfDicesByCount(sortedDices, 3);
+	}
+
+	private Integer getEyesOfFourDices(Map<Integer, Integer> sortedDices) {
+		return getEyesOfDicesByCount(sortedDices, 4);
+	}
+
+	private Integer getEyesOfFiveDices(Map<Integer, Integer> sortedDices) {
+		return getEyesOfDicesByCount(sortedDices, 5);
+	}
+
+	private Integer getEyesOfDicesByCount(Map<Integer, Integer> sortedDices, int count) {
+		for (Entry<Integer, Integer> entry : sortedDices.entrySet()) {
+			if (entry.getValue() == count) {
+				return entry.getKey();
+			}
+		}
+
+		return 0;
+	}
+
+	private Integer getEyesOfFirstDice(Map<Integer, Integer> sortedDices) {
+		return sortedDices.keySet().toArray(new Integer[0])[0];
+	}
+
+	private int accumulateSingleDices(Map<Integer, Integer> sortedDices) {
+		Integer numberOfOnes = sortedDices.getOrDefault(1, 0);
+		Integer numberOfFives = sortedDices.getOrDefault(5, 0);
+
+		return numberOfOnes * 100 + numberOfFives * 50;
+	}
+
+	private Map<Integer, Integer> sortAndCountDices(int[] input) {
+		Map<Integer, Integer> result = Arrays.stream(input).boxed()
+				.collect(Collectors.groupingBy(Function.identity(), countNumberOfDices()));
+
+		return result;
+	}
+
+	private Collector<Integer, ?, Integer> countNumberOfDices() {
+		return Collectors.reducing(Integer.valueOf(0), (in, val) -> in + Integer.valueOf(1));
 	}
 }

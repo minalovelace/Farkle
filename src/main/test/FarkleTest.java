@@ -812,6 +812,19 @@ class FarkleTest {
 		Assertions.assertEquals(4800, result);
 	}
 
+	@Test
+	void testFiveOfAKindSixesAndOne() {
+		// arrange
+		int[] input = new int[] { 6, 6, 1, 6, 6, 6 };
+		Farkle farkle = new Farkle();
+
+		// act
+		int result = farkle.score(input);
+
+		// assert
+		Assertions.assertEquals(2500, result);
+	}
+
 	// ---- Illegal number of dices ----
 
 	@Test
