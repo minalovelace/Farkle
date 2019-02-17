@@ -508,4 +508,31 @@ class FarkleTest {
 		// assert
 		Assertions.assertEquals(150, result);
 	}
+
+	// ---- Illegal number of dices ----
+
+	@Test
+	void testZeroDices() {
+		// arrange
+		int[] input = new int[] {};
+		Farkle farkle = new Farkle();
+
+		// act
+		int result = farkle.score(input);
+
+		// assert
+		Assertions.assertEquals(0, result);
+	}
+
+	@Test
+	void testSevenDices() {
+		// arrange
+		int[] input = new int[] { 1, 2, 3, 4, 5, 6, 1 };
+		Farkle farkle = new Farkle();
+
+		// act and assert
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			farkle.score(input);
+		});
+	}
 }

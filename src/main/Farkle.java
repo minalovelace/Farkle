@@ -4,18 +4,29 @@ import java.util.Arrays;
 
 public class Farkle {
 	public int score(int[] input) {
-		if (input.length < 3)
+		switch (input.length) {
+		case 0:
+		case 1:
+		case 2:
 			return accumulateSingleDices(input);
-		else if (input.length == 3)
+		case 3:
 			return calculateThreeDices(input);
-		else if (input.length == 4) {
+		case 4:
 			int[] sortedInput = input;
 			Arrays.sort(sortedInput, 0, sortedInput.length);
 			return calculateFourDices(sortedInput);
+		default:
+			throw new IllegalArgumentException("Illegal number of dices: '" + input.length + "'.");
+		}
+	}
+
+	private int accumulateSingleDices(int[] input) {
+		int result = 0;
+		for (int i : input) {
+			result += calculateSingleDice(i);
 		}
 
-		// Farkle
-		return 0;
+		return result;
 	}
 
 	private int calculateFourDices(int[] input) {
@@ -32,22 +43,19 @@ public class Farkle {
 		return accumulateSingleDices(input);
 	}
 
-	private boolean isFourOfAKind(int[] input) {
-		int[] firstThreeDices = new int[] { input[0], input[1], input[2] };
-		return isTriple(firstThreeDices) && input[0] == input[3];
-	}
-
 	private int calculateFourOfAKind(int input) {
 		return calculateValueOfTriple(input) * 2;
 	}
 
-	private int accumulateSingleDices(int[] input) {
-		int result = 0;
-		for (int i : input) {
-			result += calculateSingleDice(i);
+	private int calculateSingleDice(int input) {
+		switch (input) {
+		case 1:
+			return 100;
+		case 5:
+			return 50;
+		default:
+			return 0;
 		}
-
-		return result;
 	}
 
 	private int calculateThreeDices(int[] input) {
@@ -56,10 +64,6 @@ public class Farkle {
 		}
 
 		return accumulateSingleDices(input);
-	}
-
-	private boolean isTriple(int[] input) {
-		return input[0] == input[1] && input[1] == input[2];
 	}
 
 	private int calculateValueOfTriple(int input) {
@@ -81,13 +85,12 @@ public class Farkle {
 		}
 	}
 
-	private int calculateSingleDice(int input) {
-		if (input == 1) {
-			return 100;
-		} else if (input == 5) {
-			return 50;
-		}
+	private boolean isFourOfAKind(int[] input) {
+		int[] firstThreeDices = new int[] { input[0], input[1], input[2] };
+		return isTriple(firstThreeDices) && input[0] == input[3];
+	}
 
-		return 0;
+	private boolean isTriple(int[] input) {
+		return input[0] == input[1] && input[1] == input[2];
 	}
 }
