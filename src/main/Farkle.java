@@ -28,6 +28,14 @@ public class Farkle {
 			return 1000;
 		case 2:
 			return 200;
+		case 3:
+			return 300;
+		case 4:
+			return 400;
+		case 5:
+			return 500;
+		case 6:
+			return 600;
 		default:
 			return 0;
 		}
