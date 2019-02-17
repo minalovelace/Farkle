@@ -29,10 +29,19 @@ public class Farkle {
 		case 5:
 			return calculateFiveDices(sortedDices);
 		case 6:
-			return accumulateSingleDices(sortedDices);
+			return calculateSixDices(sortedDices);
 		default:
 			return accumulateSingleDices(sortedDices);
 		}
+	}
+
+	private int calculateSixDices(Map<Integer, Integer> sortedDices) {
+		if (sortedDices.containsValue(6)) {
+			Integer eyes = getEyesOfFirstDice(sortedDices);
+			return calculateValueOfTriple(eyes) * 8;
+		}
+
+		return 0;
 	}
 
 	private int calculateFiveDices(Map<Integer, Integer> sortedDices) {
