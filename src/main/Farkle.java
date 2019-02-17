@@ -2,8 +2,8 @@ package main;
 
 public class Farkle {
 	public int score(int[] input) {
-		if (input.length == 1) {
-			return CalculateSingleDice(input[0]);
+		if (input.length < 3) {
+			return AccumulateSingleDices(input);
 		}
 
 		if (input.length == 3) {
@@ -12,6 +12,15 @@ public class Farkle {
 
 		// Farkle
 		return 0;
+	}
+
+	private int AccumulateSingleDices(int[] input) {
+		int result = 0;
+		for (int i : input) {
+			result += CalculateSingleDice(i);
+		}
+
+		return result;
 	}
 
 	private int CalculateThreeDices(int[] input) {

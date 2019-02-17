@@ -87,6 +87,21 @@ class FarkleTest {
 		Assertions.assertEquals(0, result);
 	}
 
+	// ---- Doubles ----
+
+	@Test
+	void testDoubleOneAndOne() {
+		// arrange
+		int[] input = new int[] { 1, 1 };
+		Farkle farkle = new Farkle();
+
+		// act
+		int result = farkle.score(input);
+
+		// assert
+		Assertions.assertEquals(200, result);
+	}
+
 	// ---- Triples ----
 
 	@Test
