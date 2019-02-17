@@ -171,7 +171,15 @@ public class Farkle {
 	}
 
 	private boolean isThreePairs(Map<Integer, Integer> sortedDices) {
-		return sortedDices.containsValue(2) && sortedDices.size() == 3;
+		if (sortedDices.size() != 3)
+			return false;
+
+		for (Integer value : sortedDices.values()) {
+			if (value != 2)
+				return false;
+		}
+
+		return true;
 	}
 
 	private Integer getEyesOfDicesByCount(Map<Integer, Integer> sortedDices, int count) {
