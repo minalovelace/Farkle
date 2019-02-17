@@ -825,6 +825,97 @@ class FarkleTest {
 		Assertions.assertEquals(2500, result);
 	}
 
+	@Test
+	void testFiveOfAKindSixesAndTwo() {
+		// arrange
+		int[] input = new int[] { 6, 2, 6, 6, 6, 6 };
+		Farkle farkle = new Farkle();
+
+		// act
+		int result = farkle.score(input);
+
+		// assert
+		Assertions.assertEquals(2400, result);
+	}
+
+	@Test
+	void testFiveOfAKindOnesAndFive() {
+		// arrange
+		int[] input = new int[] { 1, 1, 1, 1, 5, 1 };
+		Farkle farkle = new Farkle();
+
+		// act
+		int result = farkle.score(input);
+
+		// assert
+		Assertions.assertEquals(4050, result);
+	}
+
+	@Test
+	void testFourOfAKindTwosAndFiveAndOne() {
+		// arrange
+		int[] input = new int[] { 2, 5, 2, 1, 2, 2 };
+		Farkle farkle = new Farkle();
+
+		// act
+		int result = farkle.score(input);
+
+		// assert
+		Assertions.assertEquals(550, result);
+	}
+
+	@Test
+	void testFourOfAKindThreesAndTwoAndSix() {
+		// arrange
+		int[] input = new int[] { 3, 6, 2, 3, 3, 3 };
+		Farkle farkle = new Farkle();
+
+		// act
+		int result = farkle.score(input);
+
+		// assert
+		Assertions.assertEquals(600, result);
+	}
+
+	@Test
+	void testThreeOfAKindThreesAndOneAndFiveAndFive() {
+		// arrange
+		int[] input = new int[] { 1, 3, 3, 5, 3, 5 };
+		Farkle farkle = new Farkle();
+
+		// act
+		int result = farkle.score(input);
+
+		// assert
+		Assertions.assertEquals(500, result);
+	}
+
+	@Test
+	void testThreeOfAKindThreesAndThreeOfAKindFives() {
+		// arrange
+		int[] input = new int[] { 3, 5, 3, 5, 3, 5 };
+		Farkle farkle = new Farkle();
+
+		// act
+		int result = farkle.score(input);
+
+		// assert
+		Assertions.assertEquals(800, result);
+	}
+
+	@Test
+	void testThreePairs() {
+		// arrange
+		int[] input = new int[] { 3, 5, 2, 2, 3, 5 };
+		Farkle farkle = new Farkle();
+
+		// act
+		int result = farkle.score(input);
+
+		// assert
+		Assertions.assertEquals(800, result);
+	}
+
 	// ---- Illegal number of dices ----
 
 	@Test

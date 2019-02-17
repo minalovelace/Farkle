@@ -92,7 +92,38 @@ public class Farkle {
 			return calculateValueOfTriple(eyes) * 4 + accumulateSingleDices(remainingDices);
 		}
 
+		if (sortedDices.containsValue(4)) {
+			Integer eyes = getEyesOfFourDices(sortedDices);
+			Map<Integer, Integer> remainingDices = getRemainingEyes(sortedDices);
+			return calculateValueOfTriple(eyes) * 2 + accumulateSingleDices(remainingDices);
+		}
+
+		if (sortedDices.containsValue(3)) {
+			return calculateScoreOfSixDicesContainingTriple(sortedDices);
+		}
+
+		if (sortedDices.containsValue(2) && sortedDices.size() == 3) {
+			return 800;
+		}
+
+		// TODO check for straight
+
 		return 0;
+	}
+
+	private int calculateScoreOfSixDicesContainingTriple(Map<Integer, Integer> sortedDices) {
+		if (sortedDices.size() == 2) {
+			int result = 0;
+			for (Entry<Integer, Integer> entry : sortedDices.entrySet()) {
+				result += calculateValueOfTriple(entry.getKey());
+			}
+			return result;
+		}
+
+		Integer eyesOfThreeDices = getEyesOfThreeDices(sortedDices);
+		Map<Integer, Integer> remainingEyes = getRemainingEyes(sortedDices);
+
+		return calculateValueOfTriple(eyesOfThreeDices) + accumulateSingleDices(remainingEyes);
 	}
 
 	private int calculateValueOfTriple(int input) {
