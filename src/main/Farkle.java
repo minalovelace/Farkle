@@ -110,7 +110,7 @@ public class Farkle {
 			return 1200;			
 		}
 		
-		return 0;
+		return accumulateSingleDices(sortedDices);
 	}
 
 	private boolean isStraight(Map<Integer, Integer> sortedDices) {
