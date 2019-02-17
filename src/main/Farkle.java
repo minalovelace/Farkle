@@ -5,9 +5,11 @@ public class Farkle {
 		if (input.length == 1) {
 			if (input[0] == 1) {
 				return 100;
+			} else if (input[0] == 5) {
+				return 50;
 			}
 		}
 		
-		throw new IllegalStateException("Not able to calculate the actual score. Input was '" + input.toString() + "'.");
+		throw new IllegalStateException("Not able to calculate the actual score.");
 	}
 }
